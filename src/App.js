@@ -1,6 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import {useEffect, useState} from "react";
+import {Table} from "antd";
 const axios = require('axios').default;
 
 function App() {
@@ -16,9 +16,58 @@ useEffect(()=>{
   .catch(function (error) {
     console.log(error);
   });},[])
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Category',
+    dataIndex: 'category',
+    key: 'category',
+  },
+  {
+    title: 'Company',
+    dataIndex: 'company',
+    key: 'company',
+  },
+  {
+    title: 'Category',
+    dataIndex: 'category',
+    key: 'category',
+  },
+  {
+    title: 'Company',
+    dataIndex: 'company',
+    key: 'company',
+  },
+  {
+    title: 'Currency',
+    dataIndex: 'currencyCode',
+    key: 'currencyCode',
+  },
+  {
+    title: 'Type',
+    dataIndex: 'fundType',
+    key: 'fundType',
+  },
+  {
+    title: 'Rating',
+    dataIndex: 'rating',
+    key: 'rating',
+  },
+  {
+    title: 'risk',
+    dataIndex: 'risk',
+    key: 'risk',
+  },
+];
+
   return (
     <div className="App">
-      {funds && funds.map(fund=>fund.name)}
+      <Table dataSource={funds} columns={columns} />;
     </div>
   );
 }
