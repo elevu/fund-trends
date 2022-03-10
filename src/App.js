@@ -4,19 +4,33 @@ import {Progress, Table, Tag} from "antd";
 import { StarTwoTone } from '@ant-design/icons';
 import {colorFromString} from "./services/helpers";
 
+const getFunds = (index) => {
+  return axios.get(`http://localhost:5001/fund-trends/us-central1/getFunds?index=${index}`)
+}
+
 const axios = require('axios').default;
 
 function App() {
-
-  const [funds, setFunds] = useState()
+  const [funds, setFunds] = useState([])
+  const [fundsAmount, setFundsAmount] = useState(0)
 
 useEffect(()=>{
-//  axios.get('http://localhost:5001/fund-trends/us-central1/getFunds')
-  axios.get('https://us-central1-fund-trends.cloudfunctions.net/getFunds')
+  getFunds(0)
   .then(function (response) {
-    setFunds(response.data.fundListViews)
-    console.log(response)
-  })
+    let localFunds = [...response.data.fundListViews]
+    setFunds(localFunds)
+    const callsToMake = Math.floor(response.data.totalNoFunds/response.data.fundListViews.length);
+
+    [...Array(callsToMake).keys()].map( (i) =>
+        {
+           getFunds((i+1)*response.data.fundListViews.length).then(res=>{
+    localFunds = [...localFunds,...res.data.fundListViews];
+    setFunds(localFunds);
+    })
+});
+
+
+})
   .catch(function (error) {
     console.log(error);
   });},[])
@@ -32,7 +46,7 @@ const columns = [
     title: 'Momentum score',
     key: 'score',
     sorter: (a, b) => a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths - (b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths),
-    render: (item) => <div style={{color: item.developmentOneWeek + item.developmentOneMonth + item.developmentThreeMonths > 0 ? '#007f8f' : '#d0184d'}}>{parseFloat(item.developmentOneWeek?.toFixed(1) + item.developmentOneMonth?.toFixed(1) + item.developmentThreeMonths?.toFixed(1))}%</div>
+    render: (item) => <div style={{color: (item.developmentOneWeek + item.developmentOneMonth + item.developmentThreeMonths) > 0 ? '#007f8f' : '#d0184d'}}>{parseFloat(item.developmentOneWeek?.toFixed(1) + item.developmentOneMonth?.toFixed(1) + item.developmentThreeMonths?.toFixed(1))}%</div>
   },
   {
     title: '1 week',
@@ -76,7 +90,7 @@ const columns = [
     render: (currency)=><Tag color={colorFromString(currency)}>{currency}</Tag>
   },
   {
-    title: 'Rating',
+    title: 'Morning Star Rating',
     dataIndex: 'rating',
     key: 'rating',
     render: (rate) => <>{[...Array(rate).keys()].map(()=><StarTwoTone twoToneColor='#FFB000' />)}</>
@@ -91,7 +105,7 @@ const columns = [
 
   return (
     <div className="App" style={{padding: 50}}>
-      <Table dataSource={funds} columns={columns} rowKey={'name'} />;
+      <Table dataSource={funds} columns={columns} rowKey={'name'} pagination={false} />;
     </div>
   );
 }
