@@ -1,6 +1,6 @@
 import './App.css';
 import {useEffect, useState} from "react";
-import {Progress, Table, Tag} from "antd";
+import {Progress, Spin, Table, Tag} from "antd";
 import { StarTwoTone } from '@ant-design/icons';
 import {colorFromString} from "./services/helpers";
 
@@ -8,18 +8,20 @@ const getFunds = (index) => {
   return axios.get(`https://us-central1-fund-trends.cloudfunctions.net/getFunds?index=${index}`)
 }
 
-const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneWeek + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneWeek + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneWeek + obj.developmentThreeMonths }))
+const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneMonth + obj.developmentThreeMonths }))
 
 const axios = require('axios').default;
 
 function App() {
   const [funds, setFunds] = useState([])
+  const [totalFunds, setTotalFunds] = useState()
 
 useEffect(()=>{
   getFunds(0)
   .then(function (response) {
     let localFunds = [...response.data.fundListViews]
     setFunds(localFunds)
+    setTotalFunds(response.data.totalNoFunds)
     const callsToMake = Math.floor(response.data.totalNoFunds/response.data.fundListViews.length);
 
     [...Array(callsToMake).keys()].map( (i) =>
@@ -114,7 +116,7 @@ const columns = [
 
   return (
     <div className="App" style={{padding: 50}}>
-      <Table dataSource={sortByScore(funds)} columns={columns} rowKey={'name'} pagination={false} />;
+      {funds?.length === totalFunds ? < Table dataSource={sortByScore(funds)} columns={columns} rowKey={'name'} pagination={false} />:<Spin size="large" /> }
     </div>
   );
 }
