@@ -8,11 +8,12 @@ const getFunds = (index) => {
   return axios.get(`http://localhost:5001/fund-trends/us-central1/getFunds?index=${index}`)
 }
 
+const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneWeek + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneWeek + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneWeek + obj.developmentThreeMonths }))
+
 const axios = require('axios').default;
 
 function App() {
   const [funds, setFunds] = useState([])
-  const [fundsAmount, setFundsAmount] = useState(0)
 
 useEffect(()=>{
   getFunds(0)
@@ -43,10 +44,18 @@ const columns = [
     render: (name, item) => <a href={`https://www.avanza.se/fonder/om-fonden.html/${item.orderbookId}/avanza-zero`}>{name}</a>
   },
   {
-    title: 'Momentum score',
-    key: 'score',
-    sorter: (a, b) => a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths - (b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths),
-    render: (item) => <div style={{color: (item.developmentOneWeek + item.developmentOneMonth + item.developmentThreeMonths) > 0 ? '#007f8f' : '#d0184d'}}>{parseFloat(item.developmentOneWeek?.toFixed(1) + item.developmentOneMonth?.toFixed(1) + item.developmentThreeMonths?.toFixed(1))}%</div>
+    title: 'Momentum Rank',
+    dataIndex: 'momentumRank',
+    key: 'momentumRank',
+    sorter: (a, b) => a.momentumRank - b.momentumRank,
+    render: (rank) => <div>{rank + 1}{' '}{rank < 3 && <Tag color={"green"}>BUY</Tag>}</div>
+  },
+  {
+    title: 'Momentum Score',
+    dataIndex: 'momentumScore',
+    key: 'momentumScore',
+    sorter: (a, b) => a.momentumScore - b.momentumScore,
+    render: (score) => <div style={{color: score > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{score.toFixed(2)}</div>
   },
   {
     title: '1 week',
@@ -105,7 +114,7 @@ const columns = [
 
   return (
     <div className="App" style={{padding: 50}}>
-      <Table dataSource={funds} columns={columns} rowKey={'name'} pagination={false} />;
+      <Table dataSource={sortByScore(funds)} columns={columns} rowKey={'name'} pagination={false} />;
     </div>
   );
 }
