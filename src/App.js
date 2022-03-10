@@ -8,7 +8,8 @@ function App() {
   const [funds, setFunds] = useState()
 
 useEffect(()=>{
-  axios.get('http://localhost:5001/fund-trends/us-central1/getFunds')
+//  axios.get('http://localhost:5001/fund-trends/us-central1/getFunds')
+  axios.get('https://us-central1-fund-trends.cloudfunctions.net/getFunds')
   .then(function (response) {
     setFunds(response.data.fundListViews)
     console.log(response)
