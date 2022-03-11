@@ -9,8 +9,8 @@ module.exports = {
     "google",
   ],
   rules: {
-    quotes: ["error", "double"],
-    maxLen: 0,
+    "quotes": ["error", "double"],
+    "max-len": 0,
   },
   ignorePatterns: ["**/lib/*.js"],
 };

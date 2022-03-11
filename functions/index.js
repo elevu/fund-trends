@@ -19,7 +19,6 @@ exports.getFunds = functions.https.onRequest((request, response) => {
       "Content-Type": "application/json",
     },
     method: "POST",
-    // eslint-disable-next-line max-len
     body: JSON.stringify({"startIndex": request.query.index, "indexFund": true, "showActivelyManagedFunds": false, "sustainabilityProfile": false, "lowCo2": false, "svanenMark": false, "noFossilFuelInvolvement": false, "commonRegionFilter": [], "otherRegionFilter": [], "alignmentFilter": [], "industryFilter": [], "fundTypeFilter": ["Aktiefond"], "interestTypeFilter": [], "sortField": "totalFee", "sortDirection": "ASCENDING", "name": "", "recommendedHoldingPeriodFilter": [], "companyFilter": [], "productInvolvementsFilter": [], "ratingFilter": [], "sustainabilityRatingFilter": [], "environmentalRatingFilter": [], "socialRatingFilter": [], "governanceRatingFilter": []}),
   })
       .then((res) => res.text())
@@ -35,7 +34,6 @@ exports.getDBFunds = functions.https.onRequest((request, response) => {
       console.log("Document data:", doc.data());
       response.send(doc.data());
     } else {
-      // doc.data() will be undefined in this case
       console.log("No such document!");
     }
   }).catch((error) => {
@@ -47,7 +45,6 @@ exports.getDBFunds = functions.https.onRequest((request, response) => {
 exports.updateFunds = functions.https.onRequest((request, response) => {
   firestore.settings({ignoreUndefinedProperties: true});
   const saveData = (funds) => {
-    // eslint-disable-next-line max-len
     const indexesRef = firestore.collection(COLLECTION_NAME).doc(documentName);
     return indexesRef.update({
       funds: funds,
@@ -56,7 +53,6 @@ exports.updateFunds = functions.https.onRequest((request, response) => {
           response.send("Funds updated!");
         })
         .catch((error) => {
-          // The document probably doesn't exist.
           response.send(`Oppsie: ${error}`);
         });
   };
@@ -72,7 +68,6 @@ exports.updateFunds = functions.https.onRequest((request, response) => {
         }
 
         [...Array(callsToMake).keys()].map( (i) => {
-          // eslint-disable-next-line max-len
           fetchFunds((i+1)*text.fundListViews.length).then((res) => res.json()).then((text)=>{
             localFunds = [...localFunds, ...text.fundListViews];
             if (localFunds.length === totalFunds) {
@@ -92,7 +87,6 @@ const fetchFunds = (index) => {
       "Content-Type": "application/json",
     },
     method: "POST",
-    // eslint-disable-next-line max-len
     body: JSON.stringify({"startIndex": index, "indexFund": true, "showActivelyManagedFunds": false, "sustainabilityProfile": false, "lowCo2": false, "svanenMark": false, "noFossilFuelInvolvement": false, "commonRegionFilter": [], "otherRegionFilter": [], "alignmentFilter": [], "industryFilter": [], "fundTypeFilter": ["Aktiefond"], "interestTypeFilter": [], "sortField": "totalFee", "sortDirection": "ASCENDING", "name": "", "recommendedHoldingPeriodFilter": [], "companyFilter": [], "productInvolvementsFilter": [], "ratingFilter": [], "sustainabilityRatingFilter": [], "environmentalRatingFilter": [], "socialRatingFilter": [], "governanceRatingFilter": []}),
   });
 };
