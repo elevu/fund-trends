@@ -10,6 +10,7 @@ module.exports = {
   ],
   rules: {
     quotes: ["error", "double"],
+    maxLen: 0,
   },
   ignorePatterns: ["**/lib/*.js"],
 };

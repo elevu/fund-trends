@@ -12,7 +12,6 @@ const firestore = new Firestore({
 });
 
 exports.getFunds = functions.https.onRequest((request, response) => {
-  console.log(request);
   response.set("Access-Control-Allow-Origin", "*");
   fetch("https://www.avanza.se/_api/fund-guide/list?shouldCheckFondExcludedFromPromotion=true", {
     headers: {
@@ -44,33 +43,56 @@ exports.getDBFunds = functions.https.onRequest((request, response) => {
   });
 });
 
+
 exports.updateFunds = functions.https.onRequest((request, response) => {
-  console.log(request);
-  response.set("Access-Control-Allow-Origin", "*");
-  fetch("https://www.avanza.se/_api/fund-guide/list?shouldCheckFondExcludedFromPromotion=true", {
+  firestore.settings({ignoreUndefinedProperties: true});
+  const saveData = (funds) => {
+    // eslint-disable-next-line max-len
+    const indexesRef = firestore.collection(COLLECTION_NAME).doc(documentName);
+    return indexesRef.update({
+      funds: funds,
+    })
+        .then(() => {
+          response.send("Funds updated!");
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          response.send(`Oppsie: ${error}`);
+        });
+  };
+  fetchFunds(0)
+      .then((res) => res.json())
+      .then((text) => {
+        let localFunds = [...text.fundListViews];
+        const totalFunds = text.totalNoFunds;
+        const callsToMake = Math.floor(totalFunds/text.fundListViews.length);
+
+        if (callsToMake < 1) {
+          saveData(text.fundListViews);
+        }
+
+        [...Array(callsToMake).keys()].map( (i) => {
+          // eslint-disable-next-line max-len
+          fetchFunds((i+1)*text.fundListViews.length).then((res) => res.json()).then((text)=>{
+            localFunds = [...localFunds, ...text.fundListViews];
+            if (localFunds.length === totalFunds) {
+              console.log(localFunds.length);
+              saveData(localFunds);
+            }
+          });
+        });
+      }
+      );
+});
+
+const fetchFunds = (index) => {
+  return fetch("https://www.avanza.se/_api/fund-guide/list?shouldCheckFondExcludedFromPromotion=true", {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
     method: "POST",
     // eslint-disable-next-line max-len
-    body: JSON.stringify({"startIndex": request.query.index, "indexFund": true, "showActivelyManagedFunds": false, "sustainabilityProfile": false, "lowCo2": false, "svanenMark": false, "noFossilFuelInvolvement": false, "commonRegionFilter": [], "otherRegionFilter": [], "alignmentFilter": [], "industryFilter": [], "fundTypeFilter": ["Aktiefond"], "interestTypeFilter": [], "sortField": "totalFee", "sortDirection": "ASCENDING", "name": "", "recommendedHoldingPeriodFilter": [], "companyFilter": [], "productInvolvementsFilter": [], "ratingFilter": [], "sustainabilityRatingFilter": [], "environmentalRatingFilter": [], "socialRatingFilter": [], "governanceRatingFilter": []}),
-  })
-      .then((res) => res.json())
-      .then((text) => {
-        // eslint-disable-next-line max-len
-        const indexesRef = firestore.collection(COLLECTION_NAME).doc(documentName);
-        console.log(text);
-        return indexesRef.update({
-          funds: text.fundListViews,
-        })
-            .then(() => {
-              response.send("Funds updated!");
-            })
-            .catch((error) => {
-              // The document probably doesn't exist.
-              response.send("Something went wrong");
-            });
-      }
-      );
-});
+    body: JSON.stringify({"startIndex": index, "indexFund": true, "showActivelyManagedFunds": false, "sustainabilityProfile": false, "lowCo2": false, "svanenMark": false, "noFossilFuelInvolvement": false, "commonRegionFilter": [], "otherRegionFilter": [], "alignmentFilter": [], "industryFilter": [], "fundTypeFilter": ["Aktiefond"], "interestTypeFilter": [], "sortField": "totalFee", "sortDirection": "ASCENDING", "name": "", "recommendedHoldingPeriodFilter": [], "companyFilter": [], "productInvolvementsFilter": [], "ratingFilter": [], "sustainabilityRatingFilter": [], "environmentalRatingFilter": [], "socialRatingFilter": [], "governanceRatingFilter": []}),
+  });
+};

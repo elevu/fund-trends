@@ -5,7 +5,7 @@ import { StarTwoTone } from '@ant-design/icons';
 import {colorFromString} from "./services/helpers";
 
 const getFunds = (index) => {
-  return axios.get(`https://us-central1-fund-trends.cloudfunctions.net/getDBFunds`)
+  return axios.get(`http://localhost:5001/fund-trends/us-central1/getDBFunds`)
 }
 
 const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneMonth + obj.developmentThreeMonths }))
