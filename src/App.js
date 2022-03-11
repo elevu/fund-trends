@@ -5,7 +5,7 @@ import { StarTwoTone } from '@ant-design/icons';
 import {colorFromString} from "./services/helpers";
 
 const getFunds = (index) => {
-  return axios.get(`https://us-central1-fund-trends.cloudfunctions.net/getFunds?index=${index}`)
+  return axios.get(`https://us-central1-fund-trends.cloudfunctions.net/getDBFunds`)
 }
 
 const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneMonth + obj.developmentThreeMonths }))
@@ -14,25 +14,11 @@ const axios = require('axios').default;
 
 function App() {
   const [funds, setFunds] = useState([])
-  const [totalFunds, setTotalFunds] = useState()
 
 useEffect(()=>{
   getFunds(0)
   .then(function (response) {
-    let localFunds = [...response.data.fundListViews]
-    setFunds(localFunds)
-    setTotalFunds(response.data.totalNoFunds)
-    const callsToMake = Math.floor(response.data.totalNoFunds/response.data.fundListViews.length);
-
-    [...Array(callsToMake).keys()].map( (i) =>
-        {
-           getFunds((i+1)*response.data.fundListViews.length).then(res=>{
-    localFunds = [...localFunds,...res.data.fundListViews];
-    setFunds(localFunds);
-    })
-});
-
-
+    setFunds(response.data.funds)
 })
   .catch(function (error) {
     console.log(error);
@@ -116,7 +102,7 @@ const columns = [
 
   return (
     <div className="App" style={{padding: 50}}>
-      {funds?.length === totalFunds ? < Table dataSource={sortByScore(funds)} columns={columns} rowKey={'name'} pagination={false} />:<Spin size="large" /> }
+      {funds?.length > 0 ? < Table dataSource={sortByScore(funds)} columns={columns} rowKey={'name'} pagination={false} />:<Spin size="large" /> }
     </div>
   );
 }
