@@ -8,7 +8,7 @@ const getFunds = (index) => {
   return axios.get(`http://localhost:5001/fund-trends/us-central1/getDBFunds`)
 }
 
-const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneWeek + b.developmentOneMonth + b.developmentThreeMonths - (a.developmentOneWeek + a.developmentOneMonth + a.developmentThreeMonths))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneWeek + obj.developmentOneMonth + obj.developmentThreeMonths }))
+const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneMonth + b.developmentThreeMonths + b.developmentOneYear +  - (a.developmentOneMonth + a.developmentThreeMonths + a.developmentOneYear))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneMonth + obj.developmentThreeMonths + obj.developmentOneYear }))
 
 const axios = require('axios').default;
 
@@ -18,6 +18,7 @@ function App() {
 useEffect(()=>{
   getFunds(0)
   .then(function (response) {
+    console.log(response)
     setFunds(response.data.funds)
 })
   .catch(function (error) {
@@ -46,12 +47,6 @@ const columns = [
     render: (score) => <div style={{color: score > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{score.toFixed(2)}</div>
   },
   {
-    title: '1 week',
-    dataIndex: 'developmentOneWeek',
-    key: 'developmentOneWeek',
-    render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)*10/10}%</div>
-  },
-  {
     title: '1 month',
     dataIndex: 'developmentOneMonth',
     key: 'developmentOneMonth',
@@ -62,6 +57,12 @@ const columns = [
     dataIndex: 'developmentThreeMonths',
     key: 'developmentThreeMonths',
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)}%</div>
+  },
+  {
+    title: '1 year',
+    dataIndex: 'developmentOneYear',
+    key: 'developmentOneYear',
+    render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount?.toFixed(1)*10/10}%</div>
   },
   {
     title: 'Total fee',
