@@ -18,7 +18,6 @@ function App() {
 useEffect(()=>{
   getFunds(0)
   .then(function (response) {
-    console.log(response)
     setFunds(response.data.funds)
 })
   .catch(function (error) {
