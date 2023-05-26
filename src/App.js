@@ -67,13 +67,13 @@ const columns = [
     title: 'Total fee',
     dataIndex: 'totalFee',
     key: 'totalFee',
-    render: (fee) => <div>{fee.toFixed(2)}%</div>
+    render: (fee) => <div>{fee?.toFixed(2)}%</div>
   },
   {
     title: 'Category',
     dataIndex: 'category',
     key: 'category',
-    render: (categories)=><div>{categories.split(',').map(category=><Tag color={colorFromString(category)}>{category}</Tag>)}</div>
+    render: (categories)=><div>{categories?.split(',').map(category=><Tag color={colorFromString(category)}>{category}</Tag>)}</div>
   },
   {
     title: 'Company',
