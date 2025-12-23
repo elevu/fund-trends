@@ -8,7 +8,19 @@ const getFunds = (index) => {
   return axios.get(`https://us-central1-fund-trends.cloudfunctions.net/getDBFunds`)
 }
 
-const sortByScore = (funds) => funds.sort((a,b)=>(b.developmentOneMonth + b.developmentThreeMonths + b.developmentOneYear +  - (a.developmentOneMonth + a.developmentThreeMonths + a.developmentOneYear))).map((obj, i)=> ({ ...obj, momentumRank: i, momentumScore: obj.developmentOneMonth + obj.developmentThreeMonths + obj.developmentOneYear }))
+const sortByScore = (funds) => 
+  funds
+    .sort((a, b) => {
+      const scoreA = (0.4 * a.developmentThreeMonths) + (0.6 * a.developmentOneYear)
+      const scoreB = (0.4 * b.developmentThreeMonths) + (0.6 * b.developmentOneYear)
+      return scoreB - scoreA;
+    })
+    .map((obj, i) => ({ 
+      ...obj, 
+      momentumRank: i, 
+      momentumScore: (0.4 * obj.developmentThreeMonths) + (0.6 * obj.developmentOneYear)
+    }))
+
 
 const axios = require('axios').default;
 
