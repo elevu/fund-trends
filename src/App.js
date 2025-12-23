@@ -11,14 +11,14 @@ const getFunds = (index) => {
 const sortByScore = (funds) => 
   funds
     .sort((a, b) => {
-      const scoreA = (0.4 * a.developmentThreeMonths) + (0.6 * a.developmentOneYear)
-      const scoreB = (0.4 * b.developmentThreeMonths) + (0.6 * b.developmentOneYear)
+      const scoreA = (0.2 * a.developmentThreeMonths) + (0.8 * a.developmentOneYear)
+      const scoreB = (0.2 * b.developmentThreeMonths) + (0.8 * b.developmentOneYear)
       return scoreB - scoreA;
     })
     .map((obj, i) => ({ 
       ...obj, 
       momentumRank: i, 
-      momentumScore: (0.4 * obj.developmentThreeMonths) + (0.6 * obj.developmentOneYear)
+      momentumScore: (0.2 * obj.developmentThreeMonths) + (0.8 * obj.developmentOneYear)
     }))
 
 
@@ -61,24 +61,28 @@ const columns = [
     title: '1 month',
     dataIndex: 'developmentOneMonth',
     key: 'developmentOneMonth',
+    sorter: (a, b) => a.developmentOneMonth - b.developmentOneMonth
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)}%</div>
   },
   {
     title: '3 months',
     dataIndex: 'developmentThreeMonths',
     key: 'developmentThreeMonths',
+    sorter: (a, b) => a.developmentThreeMonths - b.developmentThreeMonths
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)}%</div>
   },
   {
     title: '1 year',
     dataIndex: 'developmentOneYear',
-    key: 'developmentOneYear',
+    key: 'developmentOneYear', 
+    sorter: (a, b) => a.developmentOneYear - b.developmentOneYear
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount?.toFixed(1)*10/10}%</div>
   },
   {
     title: 'Total fee',
     dataIndex: 'totalFee',
     key: 'totalFee',
+    sorter: (a, b) => a.totalFee - b.totalFee
     render: (fee) => <div>{fee?.toFixed(2)}%</div>
   },
   {
