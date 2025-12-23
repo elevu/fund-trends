@@ -61,28 +61,28 @@ const columns = [
     title: '1 month',
     dataIndex: 'developmentOneMonth',
     key: 'developmentOneMonth',
-    sorter: (a, b) => a.developmentOneMonth - b.developmentOneMonth
+    sorter: (a, b) => a.developmentOneMonth - b.developmentOneMonth,
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)}%</div>
   },
   {
     title: '3 months',
     dataIndex: 'developmentThreeMonths',
     key: 'developmentThreeMonths',
-    sorter: (a, b) => a.developmentThreeMonths - b.developmentThreeMonths
+    sorter: (a, b) => a.developmentThreeMonths - b.developmentThreeMonths,
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount.toFixed(1)}%</div>
   },
   {
     title: '1 year',
     dataIndex: 'developmentOneYear',
     key: 'developmentOneYear', 
-    sorter: (a, b) => a.developmentOneYear - b.developmentOneYear
+    sorter: (a, b) => a.developmentOneYear - b.developmentOneYear,
     render: (amount) => <div style={{color: amount > 0 ? 'rgb(4, 116, 202)' : '#d0184d'}}>{amount?.toFixed(1)*10/10}%</div>
   },
   {
     title: 'Total fee',
     dataIndex: 'totalFee',
     key: 'totalFee',
-    sorter: (a, b) => a.totalFee - b.totalFee
+    sorter: (a, b) => a.totalFee - b.totalFee,
     render: (fee) => <div>{fee?.toFixed(2)}%</div>
   },
   {
